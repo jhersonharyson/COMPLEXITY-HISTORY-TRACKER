@@ -101762,7 +101762,7 @@
       tableStr += `<tr><th></th><th><div>${list.map(list => list.classname).join('</div<</th><th><div>')}</div></th></tr>`
 
       for(let i = 0; i < data.labels.length ; i++){
-        tableStr += `<tr><th>${data.labels[i]}</th><th>${list.map(list => grouped.filter(({classname}) => classname == list.classname)[0].datasets.filter(({label}) => label == "cbo")[0].data[i]).join('</th><th>')}</th></tr>`
+        tableStr += `<tr><th>${data.labels[i]}</th><th>${list.map(list => grouped.filter(({classname}) => classname == list.classname)[0].datasets.filter(({label}) => label ==attr)[0].data[i]).join('</th><th>')}</th></tr>`
       }
       
 
