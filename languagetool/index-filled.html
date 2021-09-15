@@ -5313,7 +5313,8 @@
       
 
      const grouped = grouped_raw.map(file => {
-       let wmcOfLastYear = null
+        let wmcOfLastYear = null;
+       let accumulateDiffOfLoc = null;
         return {
           ...file,
           datasets: file.datasets.map(dataset => {
@@ -5322,16 +5323,25 @@
               ...dataset,
               data: dataset.data.map(d => {
                 if(d == null){
-                  wmcOfLastYear = lastData
+                  if(dataset.label == "wmc")
+                    wmcOfLastYear = lastData
+                  if(dataset.label == "loc")
+                    accumulateDiffOfLoc += Math.abs(lastData - d)
                   return lastData
                 }
-                lastData = d
-                wmcOfLastYear = lastData 
+                if(dataset.label == "loc")
+                  accumulateDiffOfLoc += Math.abs(lastData - d)
+                
+                  lastData = d
+                if(dataset.label == "wmc")
+                    wmcOfLastYear = lastData
+              
                 return d;
               })
             }
           }),
-          wmcOfLastYear
+          wmcOfLastYear,
+          accumulateDiffOfLoc
         }
       })
       
@@ -5354,7 +5364,7 @@
 
       const buildTable = () => {
 
-        const list = [...new Set(grouped.sort((a, b)=> -a.wmcOfLastYear + b.wmcOfLastYear))].slice(0, 15);
+        const list = [...new Set(grouped.sort((a, b)=> -a.accumulateDiffOfLoc + b.accumulateDiffOfLoc))].slice(0, 15);
 
 
         const attrs = ["cbo","lcom","loc", "wmc"]
@@ -5381,7 +5391,7 @@
 
       const buildTableByFile = () => {
 
-        const list = [...new Set(grouped.sort((a, b)=> -a.wmcOfLastYear + b.wmcOfLastYear))].slice(0, 15);
+        const list = [...new Set(grouped.sort((a, b)=> -a.accumulateDiffOfLoc + b.accumulateDiffOfLoc))].slice(0, 15);
 
 
     const attrs = ["cbo","wmc","lcom","loc",]
@@ -5444,7 +5454,7 @@
       var myChart = new Chart(ctx, config);
 
       const mapFilenames = (grouped) => {
-        const list = [...new Set(grouped.sort((a, b)=> -a.wmcOfLastYear + b.wmcOfLastYear).map((f) => f.classname +" - wmc: " + f.wmcOfLastYear))];
+        const list = [...new Set(grouped.sort((a, b)=> -a.accumulateDiffOfLoc + b.accumulateDiffOfLoc).map((f) => f.classname +" - wmc: " + f.wmcOfLastYear + " | acc loc diff: "+f.accumulateDiffOfLoc))];
         console.log(list);
         const select = document.querySelector("#sel");
         select.innerHTML = list
